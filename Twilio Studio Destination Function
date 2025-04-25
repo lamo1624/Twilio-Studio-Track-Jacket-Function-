@@ -1,6 +1,6 @@
 async function onTrack(event, settings) {
-	const accountSid = settings.accountSid; // Replace with your accountSID --> You will find these credentials on Twilio Console Homepage
-	const authToken = settings.authToken;   // Replace with your authToken --> You will find these credentials on Twilio Console Homepage
+	const accountSid = settings.accountSid; // String. Replace with your accountSID --> You will find these credentials on Twilio Console Homepage
+	const authToken = settings.authToken;   // String. Replace with your authToken --> You will find these credentials on Twilio Console Homepage
 
 	// Encode "AccountSID:AuthToken" to Base64
 	const authString = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
@@ -18,7 +18,7 @@ async function onTrack(event, settings) {
 			},
 			body: new URLSearchParams({
 				To: event.properties.phone, //Recommend using your personal Phone Number for testing
-				From: settings.fromPhone, //Replace with your Toll-Free Phone Number
+				From: settings.fromPhone, //String + e64 format. Replace with your Phone Number
 				//Include any properties in the parameters that you want to include in your sms flow
 				Parameters: JSON.stringify({
 					firstName: event.properties.firstName,
