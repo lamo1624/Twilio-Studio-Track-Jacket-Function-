@@ -1,0 +1,44 @@
+async function onTrack(event, settings) {
+	// Replace endpoint with your Twilio Studio Flow REST API
+	const endpoint = `https://studio.twilio.com/v2/Flows/FW326c96f4fc9d196324c35a7269fac75b/Executions`;
+	let response;
+
+	try {
+		response = await fetch(endpoint, {
+			method: 'POST',
+			headers: {
+				//Replace Authorization string with your Base64 encoded string
+				Authorization: `Basic QUNlYmI2YmE2ZmUyZDU0MWM2NDczZGIyYTRmYTMwNTkzYjo1NGFhZDUwNzYxOWMyNWVjOGNhMzdkYzEzYzJkZjRjMgo=`, // Pass the authorization token as a variable for better security
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			//Include any properties in the body that you want to include in your sms flow
+			body: new URLSearchParams({
+				To: event.properties.phone,
+				From: '+18336350986', //Replace with your Toll-Free Phone Number
+				// Make sure to pass the parameters correctly
+				Parameters: JSON.stringify({
+					firstName: event.properties.firstName,
+					lastName: event.properties.lastName, // Add last name as well
+					phone: event.properties.phone // Add phone as a parameter
+				})
+			})
+		});
+	} catch (error) {
+		// Retry on connection error
+		throw new RetryError(error.message);
+	}
+
+	if (response.status >= 500 || response.status === 429) {
+		// Retry on 5xx (server errors) and 429s (rate limits)
+		throw new RetryError(`Failed with ${response.status}`);
+	}
+
+	// Check for success response
+	if (response.ok) {
+		const data = await response.json();
+		console.log('Flow triggered successfully:', data);
+	} else {
+		const errorData = await response.json();
+		console.error('Error triggering flow:', errorData);
+	}
+}
