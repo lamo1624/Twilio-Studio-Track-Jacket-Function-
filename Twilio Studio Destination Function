@@ -11,11 +11,10 @@ async function onTrack(event, settings) {
 				Authorization: `Basic QUNlYmI2YmE2ZmUyZDU0MWM2NDczZGIyYTRmYTMwNTkzYjo1NGFhZDUwNzYxOWMyNWVjOGNhMzdkYzEzYzJkZjRjMgo=`, // Pass the authorization token as a variable for better security
 				'Content-Type': 'application/x-www-form-urlencoded'
 			},
-			//Include any properties in the body that you want to include in your sms flow
 			body: new URLSearchParams({
 				To: event.properties.phone, //Recommend using your personal Phone Number for testing
 				From: '+18336350986', //Replace with your Toll-Free Phone Number
-				// Make sure to pass the parameters correctly
+				//Include any properties in the parameters that you want to include in your sms flow
 				Parameters: JSON.stringify({
 					firstName: event.properties.firstName,
 					lastName: event.properties.lastName, // Add last name as well
