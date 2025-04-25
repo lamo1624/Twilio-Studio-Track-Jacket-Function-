@@ -1,38 +1,40 @@
 async function onTrack(event, settings) {
+	const accountSid = settings.accountSid; // Replace with your accountSID --> You will find these credentials on Twilio Console Homepage
+	const authToken = settings.authToken;   // Replace with your authToken --> You will find these credentials on Twilio Console Homepage
+
+	// Encode "AccountSID:AuthToken" to Base64
+	const authString = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
+
 	// Replace endpoint with your Twilio Studio Flow REST API
-	const endpoint = `https://studio.twilio.com/v2/Flows/FW326c96f4fc9d196324c35a7269fac75b/Executions`;
+	const endpoint = `https://studio.twilio.com/v2/Flows/${settings.flowId}/Executions`;
 	let response;
 
 	try {
 		response = await fetch(endpoint, {
 			method: 'POST',
 			headers: {
-				//Replace Authorization string with your Base64 encoded string
-				Authorization: `Basic QUNlYmI2YmE2ZmUyZDU0MWM2NDczZGIyYTRmYTMwNTkzYjo1NGFhZDUwNzYxOWMyNWVjOGNhMzdkYzEzYzJkZjRjMgo=`, // Pass the authorization token as a variable for better security
+				Authorization: `Basic ${authString}`,
 				'Content-Type': 'application/x-www-form-urlencoded'
 			},
 			body: new URLSearchParams({
 				To: event.properties.phone, //Recommend using your personal Phone Number for testing
-				From: '+18336350986', //Replace with your Toll-Free Phone Number
+				From: settings.fromPhone, //Replace with your Toll-Free Phone Number
 				//Include any properties in the parameters that you want to include in your sms flow
 				Parameters: JSON.stringify({
 					firstName: event.properties.firstName,
-					lastName: event.properties.lastName, 
-					phone: event.properties.phone 
+					lastName: event.properties.lastName,
+					phone: event.properties.phone
 				})
 			})
 		});
 	} catch (error) {
-		// Retry on connection error
 		throw new RetryError(error.message);
 	}
 
 	if (response.status >= 500 || response.status === 429) {
-		// Retry on 5xx (server errors) and 429s (rate limits)
 		throw new RetryError(`Failed with ${response.status}`);
 	}
 
-	// Check for success response
 	if (response.ok) {
 		const data = await response.json();
 		console.log('Flow triggered successfully:', data);
