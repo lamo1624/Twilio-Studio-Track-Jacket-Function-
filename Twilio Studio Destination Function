@@ -13,7 +13,7 @@ async function onTrack(event, settings) {
 			},
 			//Include any properties in the body that you want to include in your sms flow
 			body: new URLSearchParams({
-				To: event.properties.phone,
+				To: event.properties.phone, //Recommend using your personal Phone Number for testing
 				From: '+18336350986', //Replace with your Toll-Free Phone Number
 				// Make sure to pass the parameters correctly
 				Parameters: JSON.stringify({
