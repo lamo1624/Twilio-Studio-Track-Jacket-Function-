@@ -17,8 +17,8 @@ async function onTrack(event, settings) {
 				//Include any properties in the parameters that you want to include in your sms flow
 				Parameters: JSON.stringify({
 					firstName: event.properties.firstName,
-					lastName: event.properties.lastName, // Add last name as well
-					phone: event.properties.phone // Add phone as a parameter
+					lastName: event.properties.lastName, 
+					phone: event.properties.phone 
 				})
 			})
 		});
