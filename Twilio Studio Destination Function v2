@@ -6,7 +6,7 @@ async function onTrack(event, settings) {
 
 	const endpoint = `https://studio.twilio.com/v2/Flows/${StudioFlowID}/Executions`; //Replace StudioFlowID with your Studio Flow ID. No String.
 
-	// Step 2: Define your Segment event
+	// Step 2: Capturing Segment Event - Leave as is
 	const segmentEventName = event.event;
 
 	// Step 3: Only Trigger this function if the event is define in Step 2
