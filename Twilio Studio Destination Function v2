@@ -1,0 +1,62 @@
+async function onTrack(event, settings) {
+	// Step 1: Authenticate your Twilio Connection using your {AccountSID:AuthToken} and encode to Base64
+	const authString = Buffer.from(
+		`${accountSID}:${authToken}` //Add your Twilio Account SID and Auth Token
+	).toString('base64');
+
+	const endpoint = `https://studio.twilio.com/v2/Flows/${StudioFlowID}/Executions`; //Replace StudioFlowID with your Studio Flow ID. No String.
+
+	// Step 2: Define your Segment event
+	const segmentEventName = event.event;
+
+	// Step 3: Only Trigger this function if the event is define in Step 2
+	if (segmentEventName !== '${SegmentEvent}') { //Replace ${SegmentEvent} with your Event. Make sure the event is a string. 
+			`Event "${segmentEventName}" does not match '${SegmentEvent}'. Skipping Twilio flow trigger.` //Replace ${SegmentEvent} with your Event. Make sure the event is a string.
+		);
+		return;
+	}
+
+	// Step 4: Define Event Properties you want to pass to Twilio Studio
+	const parameters = {
+		eventName: segmentEventName,
+		phone: event.properties.phone, 
+    //Example of Properties to Pass to Twilio Studio
+		firstName: event.properties.firstName, //Maintain event.properties. Only need to revise .properties
+		lastName: event.properties.lastName,
+		className: event.properties.className,
+		classDate: event.properties.classDate,
+		classTime: event.properties.classTime
+	};
+
+	let response;
+
+	// Step 5: HTTP Request sent to Twilio Studio API Endpoint + Setting 'To'/'From' Parameters
+	try {
+		response = await fetch(endpoint, {
+			method: 'POST',
+			headers: {
+				Authorization: `Basic ${authString}`,
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			body: new URLSearchParams({
+				To: event.properties.phone, //The 'To' number will pull from the event property - recommend using your personal # to easily test your Studio Flow
+				From: '+1 833 635 0986', // Replace this string with your Active Phone Number located in Twilio Console
+				Parameters: JSON.stringify(parameters)
+			})
+		});
+	} catch (error) {
+		throw new RetryError(error.message);
+	}
+
+	if (response.status >= 500 || response.status === 429) {
+		throw new RetryError(`Failed with ${response.status}`);
+	}
+
+	if (response.ok) {
+		const data = await response.json();
+		console.log('Flow triggered successfully:', data);
+	} else {
+		const errorData = await response.json();
+		console.error('Error triggering flow:', errorData);
+	}
+}
