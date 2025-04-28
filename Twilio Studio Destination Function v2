@@ -12,7 +12,6 @@ async function onTrack(event, settings) {
 	// Step 3: Only Trigger this function if the event is define in Step 2
 	if (segmentEventName !== '${SegmentEvent}') { //Replace ${SegmentEvent} with your Event. Make sure the event is a string. 
 			`Event "${segmentEventName}" does not match '${SegmentEvent}'. Skipping Twilio flow trigger.` //Replace ${SegmentEvent} with your Event. Make sure the event is a string.
-		);
 		return;
 	}
 
